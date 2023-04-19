@@ -12,7 +12,9 @@
 
 <br/>
 <hr/>
-<a href="/users/new">Create new user</a>
 
+<form th:method="GET" th:action="@{/users/new}">
+    <input type="submit" value="Create new User"/>
+</form>
 </body>
 </html>

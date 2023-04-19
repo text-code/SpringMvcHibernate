@@ -3,44 +3,40 @@ package web.dao;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class UserDaoImpl {
-    private int USER_ID;
-    private final List<User> users;
+public class UserDaoImpl implements UserDao {
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public UserDaoImpl() {
-        users = new ArrayList<>();
-        users.add(new User(++USER_ID, "Eric", 10, "cartman@email.com"));
-        users.add(new User(++USER_ID, "Kyle", 10, "broflovski@email.com"));
-        users.add(new User(++USER_ID, "Kenny", 10, "mccormick@email.com"));
-        users.add(new User(++USER_ID, "Stan", 10, "marsh@email.com"));
     }
 
+    @Override
     public List<User> getAllUsers() {
-        return users;
+        return entityManager.createQuery("select u from User u", User.class).getResultList();
     }
 
-    public User getUser(int id) {
-        return users.stream().filter(user -> user.getId() == id).findFirst().orElse(null);
+    @Override
+    public User getUser(long id) {
+        return entityManager.find(User.class, id);
     }
 
+    @Override
     public void save(User user) {
-        user.setId(++USER_ID);
-        users.add(user);
+        entityManager.persist(user);
     }
 
-    public void update(int id, User updateUser) {
-        User newUser = getUser(id);
-
-        newUser.setName(updateUser.getName());
-        newUser.setAge(updateUser.getAge());
-        newUser.setEmail(updateUser.getEmail());
+    @Override
+    public void update(User updateUser) {
+        entityManager.merge(updateUser);
     }
 
-    public void delete(int id) {
-        users.removeIf(user -> user.getId() == id);
+    @Override
+    public void delete(long id) {
+        entityManager.remove(getUser(id));
     }
 }
