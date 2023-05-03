@@ -50,7 +50,7 @@ public class UsersController {
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("user") User user) {
         userService.update(user);
-        return "redirect:/users";
+        return "user";
     }
 
     @DeleteMapping("/{id}")
